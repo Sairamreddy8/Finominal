@@ -4,12 +4,7 @@ A REST API that takes a portfolio of securities and returns an optimized allocat
 using historical fund returns. Five optimization strategies are available, with optional
 per-security weight bounds and a portfolio-level dividend-yield floor.
 
-- **[WALKTHROUGH.html](WALKTHROUGH.html)** — approach, request lifecycle, decisions,
-  trade-offs and what was left undone. Open it in a browser.
-- **[STRATEGIES.md](STRATEGIES.md)** — how the metrics are calculated and how each
-  strategy uses them
 - **[tests/](tests/)** — a worked request and response for every strategy
-- **[TASK.md](TASK.md)** — the original specification
 
 ## Setup
 
@@ -114,7 +109,12 @@ reference API still work.
 `equal_weighted` and `risk_parity` ignore `min_weight` / `max_weight` because box
 constraints contradict what those strategies mean — an equal split is equal, and equal
 risk contribution is equal. The bounds are still accepted and validated.
-[STRATEGIES.md](STRATEGIES.md) explains each in detail.
+
+The other three apply them differently. `min_volatility` and `min_drawdown` solve
+unconstrained, then pin any out-of-range weight to the bound it breached and redistribute
+the difference so the book still totals 100%. `sharpe_ratio` passes its bounds to the
+solver directly, because it can also carry a dividend-yield floor and clamping after the
+solve could drag the yield back below it.
 
 ### Response
 
